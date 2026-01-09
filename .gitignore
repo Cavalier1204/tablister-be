@@ -4,3 +4,4 @@
 
 node_modules
 .prettierrc
+/src/generated/prisma
