@@ -12,7 +12,7 @@ export const env = {
   PORT: parseInt(process.env.PORT ?? "3000"),
   NODE_ENV: process.env.NODE_ENV ?? "development",
 
-  API_URL: required("API_URL"),
+  API_BASE_URL: required("API_BASE_URL"),
   FRONTEND_URL: required("FRONTEND_URL"),
   DATABASE_URL: required("DATABASE_URL"),
 
