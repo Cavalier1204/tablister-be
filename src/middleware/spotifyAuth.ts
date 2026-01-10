@@ -38,7 +38,7 @@ export async function spotifyAuth(
     }
   }
 
-  (req as any).accessToken = accessToken;
-  (req as any).session = session;
+  req.accessToken = accessToken!;
+  req.session = session;
   next();
 }

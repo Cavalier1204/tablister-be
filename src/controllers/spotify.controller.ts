@@ -86,4 +86,24 @@ const callback = async (req: Request, res: Response) => {
   }
 };
 
-export default { login, callback };
+const getProfile = async (req: Request, res: Response) => {
+  try {
+    const profile = await spotifyService.getProfile(req.accessToken!);
+    res.json(profile);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch profile" });
+  }
+};
+
+const getPlaylists = async (req: Request, res: Response) => {
+  try {
+    const playlists = await spotifyService.getUserPlaylists(req.accessToken!);
+    res.json(playlists);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch playlists" });
+  }
+};
+
+export default { login, callback, getProfile, getPlaylists };
