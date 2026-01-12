@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { generateRandomString } from "@/middleware/crypto.js";
 import spotifyService from "@/services/spotify.service.js";
-import prisma from "@/db/prisma.js";
 import { env } from "@/config/env.js";
 
 const STATE_KEY = "spotify_auth_state";
@@ -19,7 +18,7 @@ const login = async (_req: Request, res: Response) => {
     httpOnly: true,
     secure: env.NODE_ENV === "production",
     sameSite: "lax",
-    maxAge: 30 * 24 * 60 * 60 * 1000,
+    maxAge: 10 * 60 * 1000, // 10 minutes
   });
 
   const params = new URLSearchParams({
@@ -41,7 +40,7 @@ const callback = async (req: Request, res: Response) => {
   if (!code) return res.status(400).send("No code provided");
 
   if (state === null || state !== storedState) {
-    res.redirect(
+    return res.redirect(
       "/#" +
         new URLSearchParams({
           error: "state_mismatch",
@@ -52,25 +51,7 @@ const callback = async (req: Request, res: Response) => {
   res.clearCookie(STATE_KEY);
 
   try {
-    const tokens = await spotifyService.exchangeCodeForTokens(code);
-
-    const profile = await spotifyService.getProfile(tokens.access_token);
-
-    let user = await prisma.user.findUnique({
-      where: { spotifyUserId: profile.id },
-    });
-    if (!user) {
-      user = await prisma.user.create({ data: { spotifyUserId: profile.id } });
-    }
-
-    const session = await prisma.session.create({
-      data: {
-        userId: user.id,
-        refreshToken: tokens.refresh_token,
-        accessToken: tokens.access_token,
-        expiresAt: new Date(Date.now() + tokens.expires_in * 1000),
-      },
-    });
+    const session = await spotifyService.createOrUpdateSessionFromCode(code);
 
     res.cookie("sessionId", session.id, {
       httpOnly: true,
@@ -106,4 +87,17 @@ const getPlaylists = async (req: Request, res: Response) => {
   }
 };
 
-export default { login, callback, getProfile, getPlaylists };
+const logout = async (req: Request, res: Response) => {
+  const sessionId = req.cookies.sessionId;
+
+  try {
+    await spotifyService.revokeSession(sessionId);
+  } catch (err) {
+    console.error("Failed to revoke session:", err);
+  }
+
+  res.clearCookie("sessionId");
+  res.status(200).json({ message: "Logged out" });
+};
+
+export default { login, callback, getProfile, getPlaylists, logout };

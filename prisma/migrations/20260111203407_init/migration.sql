@@ -16,6 +16,7 @@ CREATE TABLE "Session" (
     "expiresAt" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "revokedAt" TIMESTAMP(3),
 
     CONSTRAINT "Session_pkey" PRIMARY KEY ("id")
 );
