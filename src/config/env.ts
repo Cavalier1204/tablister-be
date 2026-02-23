@@ -13,7 +13,7 @@ export const env = {
   NODE_ENV: process.env.NODE_ENV ?? "development",
 
   API_BASE_URL: required("API_BASE_URL"),
-  FRONTEND_URL: required("FRONTEND_URL"),
+  ALLOWED_ORIGINS: JSON.parse(required("ALLOWED_ORIGINS")),
   DATABASE_URL: required("DATABASE_URL"),
 
   SPOTIFY: {
