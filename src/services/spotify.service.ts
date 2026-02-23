@@ -1,6 +1,6 @@
 import axios from "axios";
 import { env } from "@/config/env.js";
-import prisma from "@/db/prisma.js";
+import prisma from "@/config/prisma.js";
 
 const exchangeCodeForTokens = async (code: string) => {
   const response = await axios.post(
@@ -16,10 +16,10 @@ const exchangeCodeForTokens = async (code: string) => {
         Authorization:
           "Basic " +
           Buffer.from(
-            env.SPOTIFY.CLIENT_ID + ":" + env.SPOTIFY.CLIENT_SECRET
+            env.SPOTIFY.CLIENT_ID + ":" + env.SPOTIFY.CLIENT_SECRET,
           ).toString("base64"),
       },
-    }
+    },
   );
 
   return response.data; // access_token, refresh_token, expires_in
@@ -38,10 +38,10 @@ const refreshAccessToken = async (refreshToken: string) => {
         Authorization:
           "Basic " +
           Buffer.from(
-            env.SPOTIFY.CLIENT_ID + ":" + env.SPOTIFY.CLIENT_SECRET
+            env.SPOTIFY.CLIENT_ID + ":" + env.SPOTIFY.CLIENT_SECRET,
           ).toString("base64"),
       },
-    }
+    },
   );
 
   return response.data; // new access_token, expires_in
