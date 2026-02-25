@@ -1,12 +1,14 @@
 import { Request, Response, NextFunction } from "express";
 import spotifyService from "@/services/spotify.service.js";
+import sessionService from "@/services/session.service.js";
 
+// assumes req.session
 export const spotifyAuth = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
-  const sessionId = req.cookies.sessionId;
+  const sessionId = req.session?.id;
   if (!sessionId) return res.status(401).json({ error: "Not logged in" });
 
   try {
@@ -20,3 +22,22 @@ export const spotifyAuth = async (
       .json({ error: "Unauthorized: Session invalid or expired" });
   }
 };
+
+export async function requireAuth(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  const sessionId = req.cookies.sessionId;
+  if (!sessionId) return res.status(401).end();
+
+  const session = await sessionService.findSession(sessionId);
+
+  if (!session || session.revokedAt) {
+    return res.status(401).end();
+  }
+
+  req.user = session.user;
+  req.session = session;
+  next();
+}
