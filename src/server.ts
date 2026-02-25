@@ -5,6 +5,6 @@ app.listen(env.PORT, () => {
   console.log(
     `Server running on port ${env.PORT}`,
     "\nNODE.ENV:",
-    env.NODE_ENV
+    env.NODE_ENV,
   );
 });

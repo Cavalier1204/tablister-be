@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import spotifyRouter from "@/routers/spotify.router.js";
+import authRouter from "@/routers/auth.router.js";
 import { env } from "@/config/env.js";
 import morgan from "morgan";
 
@@ -34,6 +34,6 @@ app.get("/health", (req, res) => {
   res.status(200).json({ cookies: req.headers.cookie ?? null });
 });
 
-app.use("/auth/spotify", spotifyRouter);
+app.use("/auth", authRouter);
 
 export { app };
