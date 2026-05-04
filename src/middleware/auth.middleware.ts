@@ -23,7 +23,7 @@ export const spotifyAuth = async (
   }
 };
 
-export async function requireAuth(
+export async function requireAuth( // resolves req.user and req.session
   req: Request,
   res: Response,
   next: NextFunction,
