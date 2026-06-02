@@ -13,6 +13,19 @@ const login = async (req: Request, res: Response) => {
     return res.status(400).send("Invalid frontend URL");
   }
 
+  const sessionCookie = req.cookies["sessionId"];
+
+  if (sessionCookie) {
+    const session = await spotifyService
+      .getValidAccessToken(sessionCookie)
+      .catch(() => null);
+
+    if (session) {
+      console.log("Valid session found, skipping OAuth flow.");
+      return res.redirect(frontendUrl + "/dashboard");
+    }
+  }
+
   const scope = [
     "user-read-private",
     "user-read-email",
